@@ -248,16 +248,27 @@
 
   <div class="hint">
     <span>🔒</span>
-    <span>Une fois le tirage éffectué note bien ton résultat, il ne pourra pas être redonné.</span>
+    <span>Mot de passe obligatoire, puis ton prénom. Merci de garder le résultat pour toi.</span>
   </div>
 
   <div class="form">
-    <label for="nameInput">Ton prénom</label>
-    <input type="text" id="nameInput" placeholder="Ex. Alice">
-    <button type="button" onclick="showResult()">
-      <span class="button-icon">✨</span>
-      <span>Voir qui j'ai tiré</span>
+    <!-- Partie mot de passe -->
+    <label for="passwordInput">Mot de passe du tirage</label>
+    <input type="text" id="passwordInput" placeholder="Mot de passe">
+    <button type="button" onclick="unlockDraw()">
+      <span class="button-icon">🔑</span>
+      <span>Déverrouiller le tirage</span>
     </button>
+
+    <!-- Partie prénom (cachée tant que le mot de passe n'est pas bon) -->
+    <div id="nameSection" style="margin-top: 18px; display: none;">
+      <label for="nameInput">Ton prénom</label>
+      <input type="text" id="nameInput" placeholder="Ex. Azalée">
+      <button type="button" onclick="showResult()">
+        <span class="button-icon">✨</span>
+        <span>Voir qui j'ai tiré</span>
+      </button>
+    </div>
   </div>
 
   <div id="resultArea">
@@ -265,7 +276,7 @@
   </div>
 
   <div class="footer-note">
-    Le tirage est fixe pour tout le monde (<span>aucun compte, aucune donnée stockée</span>).
+    (<span>Le tirage est fixe pour tout le monde</span>).
   </div>
 </div>
 
@@ -276,13 +287,18 @@
   // 👉 À MODIFIER : mot-clé du tirage (change-le pour un nouveau tirage)
   const MASTER_SEED = "tirage-noel-2025";
 
+  // 👉 Mot de passe d'accès au tirage
+  const ACCESS_PASSWORD = "Frerault";
+
   // 👉 À MODIFIER : wishlist par personne (clé = prénom exactement comme dans NAMES)
   const WISHLISTS = {
-    "Ewen": "- N'importe quoi pour l'appart\n",
+    "Ewen": "- Un truc pour l'appart\n- Un mug rigolo\n- Chocolat noir",
     "Quentin": "- Un t-shirt taille L\n- Une plante verte\n- Une casquette",
     "Marjorie": "- Un carnet de dessin\n- Feutres à alcool\n- Bon d'achat FNAC",
-    "Floriane": "- Un accessoire de basse\n- Un bonnet\n- Une bonne bouteille de vin"
+    "Floriane": "- Un aquarium\n- Un bonnet\n- Une bonne bouteille de vin"
   };
+
+  let isUnlocked = false;
 
   // ==== LOGIQUE DU TIRAGE (optimisée & regroupée) =========================
 
@@ -347,7 +363,41 @@
       .trim();
   }
 
+  function unlockDraw() {
+    const input = document.getElementById("passwordInput").value;
+    if (!input) {
+      alert("Merci d’entrer le mot de passe du tirage.");
+      return;
+    }
+
+    if (normalize(input) === normalize(ACCESS_PASSWORD)) {
+      isUnlocked = true;
+      document.getElementById("nameSection").style.display = "block";
+
+      // On désactive le champ + bouton mot de passe
+      document.getElementById("passwordInput").setAttribute("disabled", "disabled");
+      const buttons = document.getElementsByTagName("button");
+      // le premier bouton est celui du mot de passe
+      if (buttons.length > 0) {
+        buttons[0].textContent = "Tirage déverrouillé ✅";
+        buttons[0].style.opacity = "0.7";
+        buttons[0].style.cursor = "default";
+        buttons[0].onclick = null;
+      }
+
+      // focus sur le prénom
+      document.getElementById("nameInput").focus();
+    } else {
+      alert("Mot de passe incorrect.");
+    }
+  }
+
   function showResult() {
+    if (!isUnlocked) {
+      alert("Tu dois d'abord entrer le bon mot de passe.");
+      return;
+    }
+
     const input = document.getElementById("nameInput").value;
     const nameNorm = normalize(input);
 
@@ -378,7 +428,7 @@
     resultDiv.innerHTML =
       "<h2>Ton tirage</h2>" +
       "<p class='pair-line'><strong>" + realName + "</strong> a tiré <strong>" + receiver + "</strong>.</p>" +
-      "<p class='wishlist-title'>Liste de souhaits de " + receiver + " :</p>" +
+      "<p class='wishlist-title'>Liste de souhaits de " + receiver + "</p>" +
       "<div class='wishlist-box'>" +
       (wishlist ? wishlist : "<span class='wishlist-empty'>(Aucun souhait renseigné)</span>") +
       "</div>";
@@ -387,4 +437,3 @@
 
 </body>
 </html>
-
