@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tirage secret 🎁</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #111827;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      padding: 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 22px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -80px;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.16) 0, transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12) 0, transparent 60%);
+      opacity: 0.9;
+      z-index: -1;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .emoji-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 0%, #fef3c7 0, #f97316 40%, #b45309 100%);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85), 0 12px 25px rgba(15, 23, 42, 0.9);
+      font-size: 22px;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 650;
+      margin: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hint span {
+      font-size: 0.9rem;
+    }
+
+    .form {
+      margin-top: 18px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    input[type="text"]::placeholder {
+      color: #6b7280;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35);
+      background: #020617;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #0b1120;
+      box-shadow:
+        0 12px 30px rgba(8, 47, 73, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow:
+        0 16px 38px rgba(8, 47, 73, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow:
+        0 10px 24px rgba(8, 47, 73, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .button-icon {
+      font-size: 1rem;
+    }
+
+    #resultArea {
+      margin-top: 18px;
+      text-align: left;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: radial-gradient(circle at top left, var(--accent-soft), rgba(15, 23, 42, 0.98));
+      padding: 12px 12px 10px;
+      display: none;
+    }
+
+    #resultArea h2 {
+      margin: 0 0 4px;
+      font-size: 0.98rem;
+    }
+
+    .pair-line {
+      font-size: 0.9rem;
+      margin: 4px 0 10px;
+    }
+
+    .pair-line strong {
+      color: var(--accent);
+    }
+
+    .wishlist-title {
+      margin: 4px 0 4px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .wishlist-box {
+      margin-top: 4px;
+      padding: 8px 9px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    .wishlist-empty {
+      font-style: italic;
+      color: #9ca3af;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .footer-note span {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="emoji-badge">🎁</div>
+    <div>
+      <h1>Tirage secret</h1>
+      <p class="subtitle">Tape ton prénom pour découvrir qui tu as pioché.</p>
+    </div>
+  </div>
+
+  <div class="hint">
+    <span>🔒</span>
+    <span>Merci de ne taper que ton propre prénom, et de garder le résultat pour toi.</span>
+  </div>
+
+  <div class="form">
+    <label for="nameInput">Ton prénom</label>
+    <input type="text" id="nameInput" placeholder="Ex. Alice">
+    <button type="button" onclick="showResult()">
+      <span class="button-icon">✨</span>
+      <span>Voir qui j'ai tiré</span>
+    </button>
+  </div>
+
+  <div id="resultArea">
+    <!-- Résultat injecté en JS -->
+  </div>
+
+  <div class="footer-note">
+    Le tirage est fixe pour tout le monde (<span>aucun compte, aucune donnée stockée</span>).
+  </div>
+</div>
+
+<script>
+  // 👉 À MODIFIER : prénoms des participants
+  const NAMES = ["Alice", "Bob", "Chloé", "Damien"];
+
+  // 👉 À MODIFIER : mot-clé du tirage (change-le pour un nouveau tirage)
+  const MASTER_SEED = "tirage-noel-2025";
+
+  // 👉 À MODIFIER : wishlist par personne (clé = prénom exactement comme dans NAMES)
+  const WISHLISTS = {
+    "Alice": "- Un livre de fantasy\n- Un mug rigolo\n- Chocolat noir",
+    "Bob": "- Un t-shirt taille L\n- Une plante verte\n- Une casquette",
+    "Chloé": "- Un carnet de dessin\n- Feutres à alcool\n- Bon d'achat FNAC",
+    "Damien": "- Un accessoire de basse\n- Un bonnet\n- Une bonne bouteille de vin"
+  };
+
+  // ==== LOGIQUE DU TIRAGE (optimisée & regroupée) =========================
+
+  function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    }
+    return h;
+  }
+
+  function makePRNG(seed) {
+    let state = seed >>> 0;
+    return function () {
+      state = (state * 1664525 + 1013904223) >>> 0;
+      return state / 4294967296;
+    };
+  }
+
+  function makeDerangement(size, rng) {
+    const arr = [...Array(size).keys()];
+    for (let i = size - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.some((v, i) => v === i) ? null : arr;
+  }
+
+  function buildDraw(names, seed) {
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    const base = hashString(seed + "::" + sorted.join("|"));
+
+    for (let attempt = 0; attempt < 2000; attempt++) {
+      const rng = makePRNG(base + attempt);
+      const der = makeDerangement(sorted.length, rng);
+      if (der) {
+        // on construit une map nom → destinataire
+        const mapping = {};
+        sorted.forEach((name, i) => {
+          mapping[name] = sorted[der[i]];
+        });
+        return { sortedNames: sorted, mapping };
+      }
+    }
+    return null;
+  }
+
+  const DRAW = buildDraw(NAMES, MASTER_SEED);
+
+  if (!DRAW) {
+    document.body.innerHTML =
+      "<p style='color:#fecaca;text-align:center;margin-top:40px;font-family:system-ui;'>Erreur : impossible de générer un tirage valide. Changez le MASTER_SEED dans le code.</p>";
+  }
+
+  // ==== INTERACTION UTILISATEUR ===========================================
+
+  function normalize(str) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  }
+
+  function showResult() {
+    const input = document.getElementById("nameInput").value;
+    const nameNorm = normalize(input);
+
+    if (!nameNorm) {
+      alert("Merci d’entrer ton prénom.");
+      return;
+    }
+
+    // recherche sans casse ni accents
+    const realName = DRAW.sortedNames.find(
+      (n) => normalize(n) === nameNorm
+    );
+
+    if (!realName) {
+      alert("Prénom non reconnu. Vérifie l’orthographe ou demande à l’organisateur.");
+      return;
+    }
+
+    const receiver = DRAW.mapping[realName];
+    const wishlist = WISHLISTS[receiver] || "(Aucun souhait renseigné pour le moment)";
+
+    // Popup rapide
+    alert("Tu es " + realName + " et tu as tiré : " + receiver);
+
+    // Carte détaillée
+    const resultDiv = document.getElementById("resultArea");
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML =
+      "<h2>Ton tirage</h2>" +
+      "<p class='pair-line'><strong>" + realName + "</strong> a tiré <strong>" + receiver + "</strong>.</p>" +
+      "<p class='wishlist-title'>Liste de souhaits de " + receiver + " :</p>" +
+      "<div class='wishlist-box'>" +
+      (wishlist ? wishlist : "<span class='wishlist-empty'>(Aucun souhait renseigné)</span>") +
+      "</div>";
+  }
+</script>
+
+</body>
+</html>
